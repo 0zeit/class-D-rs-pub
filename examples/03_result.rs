@@ -18,7 +18,7 @@ C++:
         std::cerr << e.what();
     }
 
-문제점: 함수 시그니처만 봐서는 buy_item이 예외를 던지는지 알 수 없다. (noexcept가 없는 한) 실수로 catch를 빼먹어도 컴파일은 통과된다.
+문제점: 함수 시그니처(형태)만 봐서는 buy_item이 예외를 던지는지 알 수 없다. (noexcept가 없는 한) 실수로 catch를 빼먹어도 컴파일은 통과된다.
 
 Rust:
     fn buy_item(p: &mut Player, name: &str) -> Result<(), GameError>
@@ -36,6 +36,9 @@ enum GameError {
     InvalidInput(String),
 }
 
+/*
+여기 붙은 '_ 는 find_item의 'a 와 같은 "라이프타임" 표식. "입력과 출력의 수명관계"를 명시하기 위한 기능이며, 다음 시간에 알아볼것.
+*/
 // ex02에서 배운 Display Trait을 여기서도 그대로 활용, C++의 what() 오버라이드와 동일한 역할
 impl fmt::Display for GameError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -57,9 +60,9 @@ impl fmt::Display for GameError {
 }
 
 /*
-// From Trait: Rust 표준 라이브러리에 준비된 Trait. 서로 다른 에러 타입을 자동으로 변환
-// C++: catch (...) 로 뭉뚱그리거나, 각 예외 타입을 일일이 잡아 재포장해야 함
-// Rust: From<T>를 구현해두면 ? 연산자가 "알아서" 타입 변환을 해준다.
+From Trait: Rust 표준 라이브러리에 준비된 Trait. 서로 다른 에러 타입을 자동으로 변환
+C++: catch (...) 로 뭉뚱그리거나, 각 예외 타입을 일일이 잡아 재포장해야 함
+Rust: From<T>를 구현해두면 ? 연산자가 "알아서" 타입 변환을 해준다.
 */
 // 아래 구현 덕분에, ParseIntError가 발생하는 지점에서 ? 를 쓰면 자동으로 GameError::InvalidInput 으로 감싸져서 전파된다.
 impl From<ParseIntError> for GameError {
